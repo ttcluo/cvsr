@@ -1,0 +1,50 @@
+name: RISTN_Vimo90k_BIx4
+model_type: VideoRISTNModel
+scale: 4
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test:
+    name: Vimeo90K-Test
+    type: VideoTestVimeo90KDataset
+    dataroot_gt: /mnt/cloud_disk/LZZData/vimeo_septuplet/sequences
+    dataroot_lq: /mnt/cloud_disk/LZZData/vimeo_septuplet_matlabLRx4/sequences
+    meta_info_file: ./data/meta_info/meta_info_Vimeo90K_test_GT.txt
+    io_backend:
+      type: disk
+
+    cache_data: false
+    num_frame: 5
+    padding: reflection_circle
+
+
+# network structures
+network_g:
+  type: RISTN
+  temporal_depth: 10
+  growth_rate: 16
+  spatial_path: ../experiments/pretrained_models/RISTN/netG_epoch_4_120.pth
+
+
+# path
+path:
+  pretrain_network_g: ../record/RISTN_Vimeo90K_BIx4/models/net_g_latest.pth
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  flip_seq: true
+  center_frame_only: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: true

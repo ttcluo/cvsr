@@ -1,0 +1,49 @@
+name: TOF_Vid4
+model_type: VideoBaseModel
+scale: 4
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test:
+    name: Vid4
+    type: VideoTestDataset
+    dataroot_gt: /mnt/cloud_disk/LZZData/Vid4/GT
+    dataroot_lq: /mnt/cloud_disk/LZZData/Vid4/BIx4/
+    io_backend:
+      type: disk
+
+    cache_data: false
+    num_frame: 5
+    padding: reflection_circle
+
+# network structures
+network_g:
+  type: WDVSR
+  n_resblocks: 10
+  inchannel: 3
+  n_features: 64
+  relation: 3
+  alpha: 210
+
+save_img: true
+
+# path
+path:
+  pretrain_network_g: ../record/WDVSR.pth
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr_y: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: true
+    ssim_y:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: true

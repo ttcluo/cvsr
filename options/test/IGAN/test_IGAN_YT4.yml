@@ -1,0 +1,51 @@
+name: IGAN_YT4_BIx4
+model_type: VideoIGANModel
+scale: 4
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test:  # the 1st test dataset
+    name: Vid4
+    type: VideoTestDataset
+    dataroot_gt: /userhome/BasicSR/YT4/GT
+    dataroot_lq: /userhome/BasicSR/YT4/BIx4/
+
+    io_backend:
+      type: disk
+    cache_data: false
+    num_frame: 7
+    padding: reflection_circle
+
+
+# network structures
+network_g:
+  type: IGAN
+  n_resgroups: 20
+  n_resblocks: 10
+  n_feats: 64
+  reduction: 16
+  rgb_range: 255
+
+
+# path
+path:
+  pretrain_network_g: /userhome/BasicSR/Pre-train/IGANX4.parm
+  strict_load_g: true
+  resume_state: ~
+
+# validation settings
+val:
+  save_img: true
+  flip_seq: false
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: true

@@ -1,0 +1,46 @@
+name: VSRNet_REDS
+model_type: VideoBaseModel
+scale: 4
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test_1:  # the 1st test dataset
+    name: REDS4
+    type: VideoTestDataset
+    dataroot_gt: /mnt/cloud_disk/LZZData/REDS4/GT
+    dataroot_lq: /mnt/cloud_disk/LZZData/REDS4/sharp_bicubic
+
+    io_backend:
+      type: disk
+    cache_data: false
+    num_frame: 5
+    padding: reflection_circle
+
+# network structures
+network_g:
+  type: VSRNet
+  num_feat: 28
+  num_block: 5
+  spynet_path: ../experiments/pretrained_models/flownet/spynet_sintel_final-3d2a1287.pth
+
+# path
+path:
+  pretrain_network_g: /home/lizhuangzi/Desktop/record/VSRNet_Vimeo90K_BIx4/models/net_g_latest.pth
+  strict_load_g: true
+
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: true
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: true

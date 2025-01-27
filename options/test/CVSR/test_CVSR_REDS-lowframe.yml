@@ -1,0 +1,43 @@
+name: CVSR_REDS_9frame
+model_type: VideoRecurrentREDSModel
+scale: 4
+num_gpu: 1  # set num_gpu: 0 for cpu mode
+manual_seed: 0
+
+datasets:
+  test_1:  # the 1st test dataset
+    name: REDS4
+    type: VideoRecurrentTestDatasetShortREDS
+    dataroot_gt: /userhome/REDS4.zip/REDS4/GT
+    dataroot_lq: /userhome/REDS4.zip/REDS4/sharp_bicubic
+    cache_data: True
+    io_backend:
+      type: disk
+    num_frame: 9  # not needed
+
+# network structures
+network_g:
+  type: CVSR
+  num_feat: 64
+  num_block: 30
+  spynet_path: /userhome/BasicSR/Pre-train/spynet_sintel_final-3d2a1287.pth
+
+# path
+path:
+  pretrain_network_g: /userhome/BasicSR/experiments/CVSR_REDS_BIx4/models/net_g_290000.pth
+  strict_load_g: true
+
+# validation settings
+val:
+  save_img: true
+  suffix: ~  # add suffix to saved images, if None, use exp name
+
+  metrics:
+    psnr: # metric name, can be arbitrary
+      type: calculate_psnr
+      crop_border: 0
+      test_y_channel: false
+    ssim:
+      type: calculate_ssim
+      crop_border: 0
+      test_y_channel: false
